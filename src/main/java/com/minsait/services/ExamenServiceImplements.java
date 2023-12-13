@@ -34,9 +34,8 @@ public class ExamenServiceImplements implements  ExamenService{
     @Override
     public Examen save(Examen examen) {
 
-        if (examen.getPreguntas().size()==0){
-            return examenRepository.save(examen);
-        }
+        if (examen.getPreguntas().isEmpty()) return examenRepository.save(examen);
+
         preguntasRepository.savePreguntas(examen.getPreguntas());
 
         return examenRepository.save(examen);

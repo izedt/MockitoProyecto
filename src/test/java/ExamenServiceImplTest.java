@@ -145,9 +145,6 @@ class ExamenServiceImplTest {
         doAnswer(invocationOnMock -> {
             //Examen nuevoExamen = new Examen((long) (Datos.EXAMENES.size() + 1), examenConPreguntas.getNombre());// empieza desde 4 porque Historia nunca es añadido a la lista
             Examen nuevoExamen = new Examen(nextId.getAndIncrement(), examenConPreguntas.getNombre());//index de forma manual
-            if (!examenConPreguntas.getPreguntas().isEmpty()) {
-                preguntasRepository.savePreguntas(examenConPreguntas.getPreguntas());
-            }
             nuevoExamen.setPreguntas(examenConPreguntas.getPreguntas());
             return nuevoExamen;
         }).when(examenRepository).save(any());
@@ -159,7 +156,11 @@ class ExamenServiceImplTest {
 
         // then
         assertNotNull(savedExamenConPreguntas.getId(), "ID no fue generado");
-        assertEquals(savedExamenConPreguntas.getPreguntas(), examenConPreguntas.getPreguntas());
+        assertTrue(Datos.EXAMENES.getLast().getId()<savedExamenConPreguntas.getId());
+        assertEquals(examenConPreguntas.getPreguntas(), savedExamenConPreguntas.getPreguntas());
+        assertNotEquals(Collections.EMPTY_LIST, savedExamenConPreguntas.getPreguntas());
+        verify(examenRepository).save(examenConPreguntas);
+        verify(preguntasRepository).savePreguntas(anyList());
 
     }
 
@@ -181,12 +182,14 @@ class ExamenServiceImplTest {
 
         // when
         Examen savedExamenSinPreguntas = service.save(examensinPreguntas);
-        System.out.println(examensinPreguntas.getId());
-        System.out.println(savedExamenSinPreguntas.getId());
 
         // then
         assertNotNull(savedExamenSinPreguntas.getId(), "ID no fue generado");
-        assertEquals("Artes", examensinPreguntas.getNombre());
+        assertEquals("Artes", savedExamenSinPreguntas.getNombre());
+        assertTrue(Datos.EXAMENES.getLast().getId()<savedExamenSinPreguntas.getId());
+        assertEquals(Collections.EMPTY_LIST, savedExamenSinPreguntas.getPreguntas(), "Se esperaba una lista vacia");
+        verify(examenRepository).save(examensinPreguntas);
+        verifyNoInteractions(preguntasRepository);
     }
 
 
