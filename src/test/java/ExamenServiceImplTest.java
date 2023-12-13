@@ -173,9 +173,6 @@ class ExamenServiceImplTest {
         doAnswer(invocationOnMock -> {
             //Examen nuevoExamen = new Examen((long) (Datos.EXAMENES.size() + 1), examensinPreguntas.getNombre());// empieza desde 4 porque Historia nunca es añadido a la lista
             Examen nuevoExamen = new Examen(nextId.getAndIncrement(), examensinPreguntas.getNombre());//index de forma manual
-            if (!examensinPreguntas.getPreguntas().isEmpty()) {
-                preguntasRepository.savePreguntas(examensinPreguntas.getPreguntas());
-            }
             nuevoExamen.setPreguntas(examensinPreguntas.getPreguntas());
             return nuevoExamen;
         }).when(examenRepository).save(any());
